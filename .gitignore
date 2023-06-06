@@ -2,6 +2,8 @@
 pasta/
 remover/
 script/
+*.csv
+*.xlsx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

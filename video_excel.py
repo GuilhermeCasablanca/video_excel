@@ -74,8 +74,17 @@ def save_directory():
         csv_file = 'file_data.csv'
         df = pd.read_csv(csv_file)
 
+        # Folder name
+        folder_name = os.path.basename(directory)
+
         # Define the output Excel file
-        excel_file = str(directory) + '.xlsx'
+        created_date = str(created_date)
+        created_date = created_date.replace(" ", "_")
+        created_date = created_date.replace(":", "h", 1)
+        created_date = created_date.split(":", 1)[0]
+        created_date = created_date + 'min'
+        excel_file = folder_name + '_' + created_date + '.xlsx'
+        print(directory)
 
         # Write the DataFrame to an Excel file
         df.to_excel(excel_file, index=False)
