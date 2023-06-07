@@ -5,18 +5,8 @@ from copy_folder import CopyFolder
 
 root = tk.Tk()
 root.title("Casablanca Online")
-root.geometry("500x400")
+root.geometry("350x250")
 root.config(background = "white")
-
-# Grid method is chosen for placing
-# the widgets at respective positions
-# in a table like structure by
-# specifying rows and columns
-#label_file_explorer.grid(column = 1, row = 1)
-  
-#button_explore.grid(column = 1, row = 2)
-  
-#button_exit.grid(column = 1,row = 3)
 
 notebook = ttk.Notebook(root)
 

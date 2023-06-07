@@ -14,29 +14,31 @@ class CreateExcel:
         self.tab = ttk.Frame(parent)
 
         # Add your GUI elements here
+        # Diretório dos Arquivos
         self.label = ttk.Label(self.tab, text="Diretório dos Arquivos:")
-        self.label.grid(column = 1, row = 1)
-
         self.entry = ttk.Entry(self.tab, width=40)
-        self.entry.grid(column = 1, row = 2)
-        
         self.browse_button = ttk.Button(self.tab, text="Browse", command=self.browse_directory)
-        self.browse_button.grid(column = 2, row = 2)
 
+        self.label.grid(column = 1, row = 1, sticky=tk.W)
+        self.entry.grid(column = 1, row = 2, padx=5, pady=5)
+        self.browse_button.grid(column = 2, row = 2, padx=5, pady=5)
+
+        # Diretório do Excel
         self.label2 = ttk.Label(self.tab, text="Diretório do Excel:")
-        self.label2.grid(column = 1, row = 3)
-
         self.entry2 = ttk.Entry(self.tab, width=40)
-        self.entry2.grid(column = 1, row = 4)
-
         self.browse_button2 = ttk.Button(self.tab, text="Browse", command=self.browse_directory2)
-        self.browse_button2.grid(column = 2, row = 4)
 
+        self.label2.grid(column = 1, row = 3, sticky=tk.W)
+        self.entry2.grid(column = 1, row = 4, padx=5, pady=5)
+        self.browse_button2.grid(column = 2, row = 4, padx=5, pady=5)
+
+        # Gerar Excel
         self.save_button = ttk.Button(self.tab, text="Gerar Excel", command=self.save_directory)
-        self.save_button.grid(column = 1, row = 5)
+        self.save_button.grid(column = 1, row = 5, padx=5, pady=5)
 
+        # Limpar
         self.clear_button = ttk.Button(self.tab, text="Limpar", command=self.clear)
-        self.clear_button.grid(column = 2, row = 5)
+        self.clear_button.grid(column = 2, row = 5, padx=5, pady=5)
 
         self.directory = None
         self.directory2 = None
