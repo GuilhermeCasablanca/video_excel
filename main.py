@@ -3,19 +3,32 @@ from tkinter import ttk
 from create_excel import CreateExcel
 from copy_folder import CopyFolder
 
-root = tk.Tk()
-root.title("Casablanca Online")
-root.geometry("350x250")
-root.config(background = "white")
+def centralizar (root, largura_janela, altura_janela):
+    # Obtém a largura e a altura da tela
+    largura_tela = root.winfo_screenwidth()
+    altura_tela = root.winfo_screenheight()
+    # Calcula a posição x e y para centralizar a janela na tela
+    pos_x = (largura_tela - largura_janela) // 2
+    pos_y = (altura_tela - altura_janela) // 2
+    # Define a geometria da janela para centralizá-la na tela
+    return f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}"
 
-notebook = ttk.Notebook(root)
+if __name__ == '__main__':
+    root = tk.Tk()
+    root.title("Casablanca Online")
 
-tab1 = CreateExcel(notebook)
-notebook.add(tab1.tab, text="Gerar Excel")
+    root.config(background = "white")
 
-tab2 = CopyFolder(notebook)
-notebook.add(tab2.tab, text="Copiar Arquivos")
+    root.geometry(centralizar(root, 450, 300))
 
-notebook.pack(fill="both", expand=True)
+    notebook = ttk.Notebook(root)
 
-root.mainloop()
+    tab1 = CreateExcel(notebook)
+    notebook.add(tab1.tab, text="Gerar Excel")
+
+    tab2 = CopyFolder(notebook)
+    notebook.add(tab2.tab, text="Mover Arquivos")
+
+    notebook.pack(fill="both", expand=True)
+
+    root.mainloop()

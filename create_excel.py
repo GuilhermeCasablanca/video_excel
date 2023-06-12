@@ -4,9 +4,8 @@ import csv
 import datetime
 import time
 import pandas as pd
+from tkinter import filedialog, ttk, messagebox
 from moviepy.editor import VideoFileClip
-from tkinter import filedialog
-from tkinter import ttk
 
 class CreateExcel:
     def __init__(self, parent):
@@ -19,27 +18,31 @@ class CreateExcel:
         self.entry = ttk.Entry(self.tab, width=40)
         self.browse_button = ttk.Button(self.tab, text="Browse", command=self.browse_directory)
 
-        self.label.grid(column = 1, row = 1, sticky=tk.W)
-        self.entry.grid(column = 1, row = 2, padx=5, pady=5)
-        self.browse_button.grid(column = 2, row = 2, padx=5, pady=5)
-
         # Diretório do Excel
         self.label2 = ttk.Label(self.tab, text="Diretório do Excel:")
         self.entry2 = ttk.Entry(self.tab, width=40)
         self.browse_button2 = ttk.Button(self.tab, text="Browse", command=self.browse_directory2)
 
+        # Gerar Excel
+        self.save_button = ttk.Button(self.tab, text="Gerar Excel", command=self.save_directory)
+        
+        # Limpar
+        self.clear_button = ttk.Button(self.tab, text="Limpar", command=self.clear)
+        
+        # Formatação
+        self.label.grid(column = 1, row = 1, sticky=tk.W)
+        self.entry.grid(column = 1, row = 2, padx=5, pady=5)
+        self.browse_button.grid(column = 2, row = 2, padx=5, pady=5)
+
         self.label2.grid(column = 1, row = 3, sticky=tk.W)
         self.entry2.grid(column = 1, row = 4, padx=5, pady=5)
         self.browse_button2.grid(column = 2, row = 4, padx=5, pady=5)
 
-        # Gerar Excel
-        self.save_button = ttk.Button(self.tab, text="Gerar Excel", command=self.save_directory)
         self.save_button.grid(column = 1, row = 5, padx=5, pady=5)
-
-        # Limpar
-        self.clear_button = ttk.Button(self.tab, text="Limpar", command=self.clear)
+        
         self.clear_button.grid(column = 2, row = 5, padx=5, pady=5)
 
+        # Variaveis
         self.directory = None
         self.directory2 = None
 
@@ -70,7 +73,7 @@ class CreateExcel:
             video.close()
             return duration
         except Exception as e:
-            print(f"Error occurred while getting duration for file '{file_path}': {str(e)}")
+            messagebox.showinfo("Erro", f"Não foi possível obter duração do arquivo: '{file_path}': {str(e)}")
             return 0
 
     def calculate_video_bitrate(self, file_size, duration):
@@ -91,7 +94,6 @@ class CreateExcel:
 
             # Create a CSV file
             csv_file = open(directory2 + '/' + 'file_data.csv', 'w', newline='', encoding='utf-8')
-            print(directory2)
             csv_writer = csv.writer(csv_file)
 
             # Write header row
@@ -121,7 +123,6 @@ class CreateExcel:
                     csv_writer.writerow([file_name, extension, duration, file_size, created_date, bitrate])
 
             csv_file.close()
-            print("CSV file created successfully!")
 
             # Read the CSV file
             csv_file = directory2 + '/' + 'file_data.csv'
@@ -137,13 +138,12 @@ class CreateExcel:
             created_date = created_date.split(":", 1)[0]
             created_date = created_date + 'min'
             excel_file = folder_name + '_' + created_date + '.xlsx'
-            print(directory)
 
             # Write the DataFrame to an Excel file
             df.to_excel(directory2 + '/' + excel_file, index=False)
-            print("Excel file created successfully!")
+            messagebox.showinfo("Confirmação", "Arquivo Excel criado com sucesso")
 
             # Delete csv
             os.remove(csv_file)
         else:
-            print("Please select a directory.")
+            messagebox.showinfo("Erro", "Por favor selecione um diretório")

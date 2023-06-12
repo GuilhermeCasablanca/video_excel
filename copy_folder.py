@@ -1,12 +1,9 @@
 import tkinter as tk
-from tkinter import filedialog
 import os
-import csv
-import datetime
-import time
-from moviepy.editor import VideoFileClip
 import pandas as pd
-from tkinter import ttk
+import shutil
+import logging
+from tkinter import filedialog, ttk, messagebox
 
 class CopyFolder:
     def __init__(self, parent):
@@ -30,7 +27,7 @@ class CopyFolder:
         self.button_destination = ttk.Button(self.tab, text="Browse", command=self.browse_destination)
 
         # Copiar Arquivos
-        self.save_button = ttk.Button(self.tab, text="Copiar Arquivos", command=self.save_directory)
+        self.save_button = ttk.Button(self.tab, text="Mover Arquivos", command=self.copy_files)
 
         # Limpar
         self.clear_button = ttk.Button(self.tab, text="Limpar", command=self.clear)
@@ -43,13 +40,13 @@ class CopyFolder:
         self.label_files.grid(column = 1, row = 3, sticky=tk.W)
         self.entry_files.grid(column = 1, row = 4, padx=5, pady=5)
         self.button_files.grid(column = 2, row = 4, padx=5, pady=5)
-        
+
         self.label_destination.grid(column = 1, row = 5, sticky=tk.W)
         self.entry_destination.grid(column = 1, row = 6, padx=5, pady=5)
         self.button_destination.grid(column = 2, row = 6, padx=5, pady=5)
 
         self.save_button.grid(column = 1, row = 7, padx=5, pady=5)
-
+        
         self.clear_button.grid(column = 2, row = 7, padx=5, pady=5)
 
         # Variaveis
@@ -58,7 +55,7 @@ class CopyFolder:
         self.path_destination = None
 
     def browse_excel(self):
-        path_excel = filedialog.askdirectory()
+        path_excel = filedialog.askopenfilename(filetypes=[("Excel Files", "*.xlsx")])
         if path_excel:
             self.path_excel = path_excel
             self.entry_excel.delete(0, tk.END)
@@ -86,8 +83,30 @@ class CopyFolder:
         self.path_destination = None
         self.entry_destination.delete(0, tk.END)
 
-    def save_directory(self):
-        if self.path_excel:
-            print("Directory saved:", self.path_excel)
+    def copy_files(self):
+        # Criando um arquivo de log
+        error = 0
+        logging.basicConfig(filename='app.log', filemode='w', format='%(message)s')
+
+        if self.path_excel and self.path_files and self.path_destination:
+            # Usa pandas para ler o arquivo Excel
+            df = pd.read_excel(self.path_excel)
+
+            # Verifica se os arquivos do Excel existem na pasta de origem
+            # e então move eles para a pasta de destino
+            for index, row in df.iterrows():
+                file_name = row[0] + row[1]
+                source = os.path.join(self.path_files, file_name)
+                destination = os.path.join(self.path_destination, file_name)
+                if os.path.isfile(source):
+                    shutil.move(source, destination)
+                else:
+                    error = 1
+                    logging.warning(f'O arquivo "{file_name}" nao existe na pasta de origem.')
+
+            if error:
+                messagebox.showinfo("Warning", "Alguns arquivos não foram encontrados \nVerificar app.log")
+            else:
+                messagebox.showinfo("Confirmação", "Arquivos movidos com sucesso")
         else:
-            print("No directory selected!")
+            messagebox.showinfo("Erro", "Por favor selecione um diretório")
