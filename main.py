@@ -1,4 +1,5 @@
 import tkinter as tk
+import sys
 from tkinter import ttk
 from create_excel import CreateExcel
 from copy_folder import CopyFolder
@@ -14,6 +15,10 @@ def centralizar (root, largura_janela, altura_janela):
     return f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}"
 
 if __name__ == '__main__':
+    if getattr(sys, 'frozen', False):
+        # Splash screen
+        import pyi_splash
+
     root = tk.Tk()
     root.title("Casablanca Online")
 
@@ -30,5 +35,9 @@ if __name__ == '__main__':
     notebook.add(tab2.tab, text="Mover Arquivos")
 
     notebook.pack(fill="both", expand=True)
+
+    if getattr(sys, 'frozen', False):
+        # Splash screen close
+        pyi_splash.close()
 
     root.mainloop()
