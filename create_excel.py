@@ -117,7 +117,8 @@ class CreateExcel:
                         file_size = str(round(file_size/(1024*1024), 2)) + " MB"
                     else:
                         file_size = str(round(file_size/(1024*1024*1024), 2)) + " GB"
-                    bitrate = str(round(bitrate/1000)) + " kb/s"
+                    bitrate = f"{bitrate/(1000*1000):.2f}" + " mbps"
+                    
 
                     # Write data to the CSV file
                     csv_writer.writerow([file_name, extension, duration, file_size, created_date, bitrate])
