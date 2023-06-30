@@ -117,7 +117,7 @@ class CreateExcel:
                         file_size = str(round(file_size/(1024*1024), 2)) + " MB"
                     else:
                         file_size = str(round(file_size/(1024*1024*1024), 2)) + " GB"
-                    bitrate = f"{bitrate/(1000*1000):.2f}" + " mbps"
+                    bitrate = f"{bitrate/(1000*1000):.2f}" + " Mbps"
                     
 
                     # Write data to the CSV file
