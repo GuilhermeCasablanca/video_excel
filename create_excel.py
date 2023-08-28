@@ -84,6 +84,16 @@ class CreateExcel:
         video_bitrate = file_size_bits / duration
 
         return video_bitrate
+    
+    def is_video_file(self, file_path):
+        # Attempts to create a VideoFileClip object from the given file path. 
+        # If it succeeds, it means the file is a video. If it raises an exception, 
+        # it means the file is not a valid video file.
+        try:
+            video_clip = VideoFileClip(file_path)
+            return True
+        except:
+            return False
 
     def save_directory(self):
         directory = self.directory
@@ -102,7 +112,7 @@ class CreateExcel:
             # Loop through each file and get the details
             for file in files:
                 file_path = os.path.join(directory, file)
-                if os.path.isfile(file_path):
+                if (os.path.isfile(file_path)) and (self.is_video_file(file_path)):
                     # Get file details
                     file_name = os.path.basename(file_path).split('.')[0]
                     extension = os.path.splitext(file_path)[1]

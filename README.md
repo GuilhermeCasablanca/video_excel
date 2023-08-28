@@ -8,3 +8,7 @@ python -m venv .venv
 pip install -r requirements.txt
 
 python -m video_excel
+
+Pyinstaller:
+
+pyinstaller main.spec
