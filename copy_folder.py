@@ -83,30 +83,39 @@ class CopyFolder:
         self.path_destination = None
         self.entry_destination.delete(0, tk.END)
 
-    def copy_files(self):
-        # Criando um arquivo de log
-        error = 0
-        logging.basicConfig(filename='app.log', filemode='w', format='%(message)s')
+    def move_files_by_basename(self, source_folder, destination_folder, filename):
+        # Ensure the source and destination folders exist
+        if not os.path.exists(source_folder):
+            return
 
+        if not os.path.exists(destination_folder):
+            os.makedirs(destination_folder)
+
+        # Iterate through files in the source folder
+        for file_name in os.listdir(source_folder):
+            file_path = source_folder + '/' + file_name
+
+            # Check if the file is a regular file and if the base name matches the specified filename
+            if os.path.isfile(file_path) and os.path.splitext(file_name)[0] == filename:
+                # Construct the destination path
+                destination_path = destination_folder + '/' + file_name
+
+                # Move the file to the destination folder
+                shutil.move(file_path, destination_path)
+
+    def copy_files(self):
+        # Verifica se os arquivos do Excel existem na pasta de origem
+        # e então move eles para a pasta de destino 
         if self.path_excel and self.path_files and self.path_destination:
             # Usa pandas para ler o arquivo Excel
             df = pd.read_excel(self.path_excel)
-
-            # Verifica se os arquivos do Excel existem na pasta de origem
-            # e então move eles para a pasta de destino
+   
             for index, row in df.iterrows():
-                file_name = row[0] + row[1]
-                source = os.path.join(self.path_files, file_name)
-                destination = os.path.join(self.path_destination, file_name)
-                if os.path.isfile(source):
-                    shutil.move(source, destination)
-                else:
-                    error = 1
-                    logging.warning(f'O arquivo "{file_name}" nao existe na pasta de origem.')
+                # Nome do arquivo na tabela excel
+                file_excel = str(row[0])
 
-            if error:
-                messagebox.showinfo("Warning", "Alguns arquivos não foram encontrados \nVerificar app.log")
-            else:
-                messagebox.showinfo("Confirmação", "Arquivos movidos com sucesso")
+                self.move_files_by_basename(self.path_files, self.path_destination, file_excel)
+
+            messagebox.showinfo("Confirmação", "Arquivos movidos com sucesso")
         else:
             messagebox.showinfo("Erro", "Por favor selecione um diretório")
