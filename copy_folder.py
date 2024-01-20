@@ -2,7 +2,6 @@ import tkinter as tk
 import os
 import pandas as pd
 import shutil
-import logging
 from tkinter import filedialog, ttk, messagebox
 
 class CopyFolder:

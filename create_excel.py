@@ -1,11 +1,10 @@
 import tkinter as tk
 import os
-import csv
 import datetime
 import time
+import cv2
 import pandas as pd
 from tkinter import filedialog, ttk, messagebox
-from moviepy.editor import VideoFileClip
 
 class CreateExcel:
     def __init__(self, parent):
@@ -68,13 +67,15 @@ class CreateExcel:
 
     def get_video_duration(self, file_path):
         try:
-            video = VideoFileClip(file_path)
-            duration = video.duration
-            video.close()
+            video_capture = cv2.VideoCapture(file_path)
+            frame_count = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
+            fps = int(video_capture.get(cv2.CAP_PROP_FPS))
+            duration = frame_count / fps
+            video_capture.release()
             return duration
         except Exception as e:
-            messagebox.showinfo("Erro", f"Não foi possível obter duração do arquivo: '{file_path}': {str(e)}")
-            return 0
+            print(f"Error: {e}")
+            return None
 
     def calculate_video_bitrate(self, file_size, duration):
         # Convert file size to bits
@@ -85,15 +86,30 @@ class CreateExcel:
 
         return video_bitrate
     
-    def is_video_file(self, file_path):
-        # Attempts to create a VideoFileClip object from the given file path. 
-        # If it succeeds, it means the file is a video. If it raises an exception, 
-        # it means the file is not a valid video file.
+    def is_video(self, file_path):
         try:
-            video_clip = VideoFileClip(file_path)
-            return True
-        except:
+            # Open the file
+            cap = cv2.VideoCapture(file_path)
+
+            # Check if the file is opened successfully
+            if not cap.isOpened():
+                return False
+
+            # Get the frames per second (fps) of the video
+            fps = cap.get(cv2.CAP_PROP_FPS)
+
+            # Check if the fps is valid
+            if fps > 0:
+                 return True
+            else:
+                  return False
+        except Exception as e:
+            print(f"Error: {str(e)}")
             return False
+        finally:
+            # Release the video capture object
+            if cap is not None:
+                cap.release()
 
     def save_directory(self):
         directory = self.directory
@@ -102,17 +118,13 @@ class CreateExcel:
             # Get all the files in the directory
             files = os.listdir(directory)
 
-            # Create a CSV file
-            csv_file = open(directory2 + '/' + 'file_data.csv', 'w', newline='', encoding='utf-8')
-            csv_writer = csv.writer(csv_file)
-
-            # Write header row
-            csv_writer.writerow(["Name", "Extension", "Duration", "Size", "CreationDate", "Bitrate"])
+            # Define a matriz dos dados
+            excel_data = []
 
             # Loop through each file and get the details
             for file in files:
                 file_path = os.path.join(directory, file)
-                if (os.path.isfile(file_path)) and (self.is_video_file(file_path)):
+                if (os.path.isfile(file_path)) and (self.is_video(file_path)):
                     # Get file details
                     file_name = os.path.basename(file_path).split('.')[0]
                     extension = os.path.splitext(file_path)[1]
@@ -129,32 +141,28 @@ class CreateExcel:
                         file_size = str(round(file_size/(1024*1024*1024), 2)) + " GB"
                     bitrate = f"{bitrate/(1000*1000):.2f}" + " Mbps"
                     
-
                     # Write data to the CSV file
-                    csv_writer.writerow([file_name, extension, duration, file_size, created_date, bitrate])
-
-            csv_file.close()
-
-            # Read the CSV file
-            csv_file = directory2 + '/' + 'file_data.csv'
-            df = pd.read_csv(csv_file)
+                    excel_data.append([file_name, extension, duration, file_size, created_date, bitrate])
 
             # Folder name
             folder_name = os.path.basename(directory)
 
             # Define the output Excel file
+
             created_date = str(created_date)
             created_date = created_date.replace(" ", "_")
             created_date = created_date.replace(":", "h", 1)
             created_date = created_date.split(":", 1)[0]
             created_date = created_date + 'min'
-            excel_file = folder_name + '_' + created_date + '.xlsx'
+            excel_file = directory2 + "/" + folder_name + '_' + created_date + '.xlsx'
+
+            # Create a DataFrame from the array list
+            df = pd.DataFrame(excel_data, columns=["Name", "Extension", "Duration", "Size", "CreationDate", "Bitrate"])
 
             # Write the DataFrame to an Excel file
-            df.to_excel(directory2 + '/' + excel_file, index=False)
+            df.to_excel(excel_file, index=False)
+
             messagebox.showinfo("Confirmação", "Arquivo Excel criado com sucesso")
 
-            # Delete csv
-            os.remove(csv_file)
         else:
             messagebox.showinfo("Erro", "Por favor selecione um diretório")

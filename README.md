@@ -12,3 +12,8 @@ python -m video_excel
 Pyinstaller:
 
 pyinstaller main.spec
+
+Dependencias:
+pip install pandas
+pip install openpyxl
+pip install opencv-python
